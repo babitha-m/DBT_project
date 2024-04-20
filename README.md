@@ -12,3 +12,18 @@ docker run --name spark -it bitnami/spark:latest /bin/bash
 ```bash
 spark-submit 1.py
 ```
+
+
+Stream Processing:
+1. Start kafka and zookeeper by navigating to the kafka directory
+bin/zookeeper-server-start.sh config/zookeeper.properties
+bin/kafka-server-start.sh config/server.properties
+Start spark:
+cd /opt/spark
+./sbin/start-all.sh
+2. Start producer
+python3 stream_producer.py
+3.   Start consumers
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0 [consb.py](http://consb.py/)
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0 [consc.py](http://consc.py/)
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0 [consh.py](http://consh.py/)

@@ -37,7 +37,7 @@ for row in read_data_from_csv(csv_file):
     print(f"Produced to topic {topic}: {row}")
     
     # Wait for some time before producing next message (to simulate streaming data)
-    time.sleep(5)  # 5(?) seconds interval , can try 10
+    time.sleep(30)  # 30 seconds interval , can try 45-60
 
 # Close Kafka producer
 producer.close()

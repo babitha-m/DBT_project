@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import window, count, current_timestamp
 from pyspark.sql.functions import from_json, col, avg, max, min
 from pyspark.sql.types import StructType, StructField, StringType, FloatType
 
@@ -38,24 +39,29 @@ df = df.selectExpr("CAST(value AS STRING)")
 # Parse JSON data and apply schema
 df = df.select(from_json(df.value, schema).alias("data")).select("data.*")
 
-# Perform aggregation on city H	's data
-aggregated_df = df.groupBy().agg(
-    avg(col("temp")).alias("avg_temp"),
-    max(col("temp")).alias("max_temp"),
-    min(col("temp")).alias("min_temp"),
-    avg(col("humidity")).alias("avg_humidity"),
-    max(col("humidity")).alias("max_humidity"),
-    min(col("humidity")).alias("min_humidity"),
-    avg(col("lpg")).alias("avg_lpg"),
-    max(col("lpg")).alias("max_lpg"),
-    min(col("lpg")).alias("min_lpg"),
-    avg(col("smoke")).alias("avg_smoke"),
-    max(col("smoke")).alias("max_smoke"),
-    min(col("smoke")).alias("min_smoke"),
-    avg(col("co")).alias("avg_CO_conc"),
-    max(col("co")).alias("max_CO_conc"),
-    min(col("co")).alias("min_CO_conc")
-)
+# Adding a timestamp column
+df = df.withColumn("timestamp", current_timestamp())
+
+# Perform aggregation on city H's data
+aggregated_df = df \
+    .withWatermark("timestamp", "10 minutes") \
+    .groupBy(window("timestamp", "10 minutes")).agg(
+        avg(col("temp")).alias("avg_temp"),
+        max(col("temp")).alias("max_temp"),
+        min(col("temp")).alias("min_temp"),
+        avg(col("humidity")).alias("avg_humidity"),
+        max(col("humidity")).alias("max_humidity"),
+        min(col("humidity")).alias("min_humidity"),
+        avg(col("lpg")).alias("avg_lpg"),
+        max(col("lpg")).alias("max_lpg"),
+        min(col("lpg")).alias("min_lpg"),
+        avg(col("smoke")).alias("avg_smoke"),
+        max(col("smoke")).alias("max_smoke"),
+        min(col("smoke")).alias("min_smoke"),
+        avg(col("co")).alias("avg_CO_conc"),
+        max(col("co")).alias("max_CO_conc"),
+        min(col("co")).alias("min_CO_conc")
+    )
 
 # Write the aggregated data to console
 query = aggregated_df \
@@ -65,7 +71,3 @@ query = aggregated_df \
     .start()
 
 query.awaitTermination()
-
-# Stop SparkSession
-#spark.stop()
-

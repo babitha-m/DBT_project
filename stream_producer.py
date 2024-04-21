@@ -41,4 +41,3 @@ for row in read_data_from_csv(csv_file):
 
 # Close Kafka producer
 producer.close()
-

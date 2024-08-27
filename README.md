@@ -10,7 +10,7 @@ docker run --name spark -it bitnami/spark:latest /bin/bash
 ### Navigate to your desired folder, clone the directory and then use the following command to test batch processing:
 
 ```bash
-spark-submit 1.py
+spark-submit 3.py
 ```
 
 
